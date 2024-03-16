@@ -21,7 +21,7 @@ export default function Home() {
         <h1 className="max-w-[480px] text-center text-xl font-bold text-neutral-600 lg:text-3xl">
           Learn, practice, and master new languages with Unolingo.
         </h1>
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex w-full max-w-[330px] flex-col items-center gap-y-3">
           <ClerkLoading>
             <Loader className="h-5 w-5 animate-spin text-muted-foreground" />
           </ClerkLoading>
