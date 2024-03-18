@@ -1,13 +1,12 @@
-import { InfinityIcon } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from './ui/button'
+import Image from 'next/image'
+import { InfinityIcon } from 'lucide-react'
+
+import { courses } from '@/database/schema'
+import { Button } from '@/components/ui/button'
 
 type Props = {
-  activeCourse: {
-    title: string
-    imageSrc: string
-  }
+  activeCourse: typeof courses.$inferSelect
   hearts: number
   points: number
   hasActiveSubscription: boolean
@@ -15,8 +14,8 @@ type Props = {
 
 export const UserProgress = ({
   activeCourse,
-  hearts,
   points,
+  hearts,
   hasActiveSubscription,
 }: Props) => {
   return (
@@ -26,9 +25,9 @@ export const UserProgress = ({
           <Image
             src={activeCourse.imageSrc}
             alt={activeCourse.title}
+            className="rounded-md border"
             width={32}
             height={32}
-            className="rounded-md border"
           />
         </Button>
       </Link>
@@ -36,9 +35,9 @@ export const UserProgress = ({
         <Button variant="ghost" className="text-orange-500">
           <Image
             src="/points.svg"
-            alt="Points"
-            width={28}
             height={28}
+            width={28}
+            alt="Points"
             className="mr-2"
           />
           {points}
@@ -48,9 +47,9 @@ export const UserProgress = ({
         <Button variant="ghost" className="text-rose-500">
           <Image
             src="/heart.svg"
-            alt="Hearts"
-            width={22}
             height={22}
+            width={22}
+            alt="Hearts"
             className="mr-2"
           />
           {hasActiveSubscription ? (

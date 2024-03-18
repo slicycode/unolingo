@@ -7,11 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:studio": "npx drizzle-kit studio",
-    "db:push": "npx drizzle-kit push:pg",
-    "db:seed": "tsx ./scripts/seed.ts",
-    "db:prod": "tsx ./scripts/prod.ts",
-    "db:reset": "tsx ./scripts/reset.ts"
+    "db:studio": "bunx drizzle-kit studio",
+    "db:push": "bunx drizzle-kit push:pg",
+    "db:seed": "bun ./scripts/seed.ts",
+    "db:prod": "bun ./scripts/prod.ts",
+    "db:reset": "bun ./scripts/reset.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.9",
@@ -44,6 +44,7 @@
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.3.0",
+    "tsx": "^4.7.1",
     "typescript": "^5"
   }
 }
