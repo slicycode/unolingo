@@ -1,5 +1,7 @@
 'use client'
 
+import { upsertChallengeProgress } from '@/actions/challenge-progress'
+import { DEFAULT_HEARTS, MISSING_HEARTS } from '@/constants/hearts'
 import { challengeOptions, challenges } from '@/database/schema'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
@@ -7,6 +9,8 @@ import { Challenge } from './challenge'
 import { Footer } from './footer'
 import { Header } from './header'
 import { QuestionBubble } from './question-bubble'
+import { toast } from 'sonner'
+import { reduceHearts } from '@/actions/user-progress'
 
 type Props = {
   initialPercentage: number
@@ -61,6 +65,65 @@ export const Quiz = ({
     setSelectedOption(id)
   }
 
+  const onContinue = () => {
+    if (!selectedOption) return
+
+    if (status === 'wrong') {
+      setStatus('none')
+      setSelectedOption(undefined)
+      return
+    }
+
+    if (status === 'correct') {
+      onNext()
+      setStatus('none')
+      setSelectedOption(undefined)
+      return
+    }
+
+    const correctOption = options.find((option) => option.correct)
+
+    if (correctOption && correctOption.id === selectedOption) {
+      startTransition(() => {
+        upsertChallengeProgress(challenge.id)
+          .then((res) => {
+            if (res?.error === MISSING_HEARTS) {
+              console.error(MISSING_HEARTS)
+              return
+            }
+
+            setStatus('correct')
+            setPercentage((prev) => prev + 100 / challenges.length)
+
+            // Practice mode
+            if (initialPercentage === 100) {
+              setHearts((prev) => Math.min(prev + 1, DEFAULT_HEARTS))
+            }
+          })
+          .catch(() => {
+            toast.error('Something went wrong. Please try again.')
+          })
+      })
+    } else {
+      startTransition(() => {
+        reduceHearts(challenge.id)
+          .then((res) => {
+            if (res?.error === MISSING_HEARTS) {
+              console.error(MISSING_HEARTS)
+              return
+            }
+
+            setStatus('wrong')
+
+            if (!res?.error) setHearts((prev) => Math.max(prev - 1, 0))
+          })
+          .catch(() => {
+            toast.error('Something went wrong. Please try again.')
+          })
+      })
+    }
+  }
+
   return (
     <>
       <Header
@@ -93,7 +156,7 @@ export const Quiz = ({
       <Footer
         disabled={pending || !selectedOption}
         status={status}
-        onCheck={() => {}}
+        onCheck={onContinue}
       />
     </>
   )
