@@ -4,6 +4,7 @@ import { upsertChallengeProgress } from '@/actions/challenge-progress'
 import { reduceHearts } from '@/actions/user-progress'
 import { DEFAULT_HEARTS, MISSING_HEARTS } from '@/constants/hearts'
 import { challengeOptions, challenges } from '@/database/schema'
+import { useHeartsModal } from '@/store/use-hearts-modal'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
@@ -34,6 +35,7 @@ export const Quiz = ({
   initialLessonChallenges,
   userSubscription,
 }: Props) => {
+  const { open: openHeartsModal } = useHeartsModal()
   const { width, height } = useWindowSize()
   const [finishAudio] = useAudio({ src: '/finish.mp3', autoPlay: true })
   const [correctAudio, _c, correctControls] = useAudio({ src: '/correct.wav' })
@@ -141,7 +143,7 @@ export const Quiz = ({
         upsertChallengeProgress(challenge.id)
           .then((res) => {
             if (res?.error === MISSING_HEARTS) {
-              console.error(MISSING_HEARTS)
+              openHeartsModal()
               return
             }
 
@@ -163,7 +165,7 @@ export const Quiz = ({
         reduceHearts(challenge.id)
           .then((res) => {
             if (res?.error === MISSING_HEARTS) {
-              console.error(MISSING_HEARTS)
+              openHeartsModal()
               return
             }
 
