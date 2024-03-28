@@ -4,7 +4,11 @@ import { auth, currentUser } from '@clerk/nextjs'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { MISSING_HEARTS } from '@/constants/hearts'
+import {
+  DEFAULT_HEARTS,
+  MISSING_HEARTS,
+  POINTS_TO_REFILL_HEARTS,
+} from '@/constants/hearts'
 import db from '@/database/drizzle'
 import { getCourseById, getUserProgress } from '@/database/queries'
 import { challengeProgress, challenges, userProgress } from '@/database/schema'
@@ -96,27 +100,27 @@ export const reduceHearts = async (challengeId: number) => {
   revalidatePath(`/lesson/${lessonId}`)
 }
 
-// export const refillHearts = async () => {
-//   const currentUserProgress = await getUserProgress()
+export const refillHearts = async () => {
+  const currentUserProgress = await getUserProgress()
 
-//   if (!currentUserProgress) throw new Error('User progress not found')
+  if (!currentUserProgress) throw new Error('User progress not found')
 
-//   if (currentUserProgress.hearts === 5)
-//     throw new Error('Hearts are already full')
+  if (currentUserProgress.hearts === DEFAULT_HEARTS)
+    throw new Error('Hearts are already full')
 
-//   if (currentUserProgress.points < POINTS_TO_REFILL)
-//     throw new Error('Not enough points')
+  if (currentUserProgress.points < POINTS_TO_REFILL_HEARTS)
+    throw new Error('Not enough points')
 
-//   await db
-//     .update(userProgress)
-//     .set({
-//       hearts: 5,
-//       points: currentUserProgress.points - POINTS_TO_REFILL,
-//     })
-//     .where(eq(userProgress.userId, currentUserProgress.userId))
+  await db
+    .update(userProgress)
+    .set({
+      hearts: DEFAULT_HEARTS,
+      points: currentUserProgress.points - POINTS_TO_REFILL_HEARTS,
+    })
+    .where(eq(userProgress.userId, currentUserProgress.userId))
 
-//   revalidatePath('/shop')
-//   revalidatePath('/learn')
-//   revalidatePath('/quests')
-//   revalidatePath('/leaderboard')
-// }
+  revalidatePath('/shop')
+  revalidatePath('/learn')
+  revalidatePath('/quests')
+  revalidatePath('/leaderboard')
+}
