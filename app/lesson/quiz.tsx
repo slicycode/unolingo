@@ -5,11 +5,12 @@ import { reduceHearts } from '@/actions/user-progress'
 import { DEFAULT_HEARTS, MISSING_HEARTS } from '@/constants/hearts'
 import { challengeOptions, challenges } from '@/database/schema'
 import { useHeartsModal } from '@/store/use-hearts-modal'
+import { usePracticeModal } from '@/store/use-practice-modal'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import Confetti from 'react-confetti'
-import { useAudio, useWindowSize } from 'react-use'
+import { useAudio, useMount, useWindowSize } from 'react-use'
 import { toast } from 'sonner'
 import { Challenge } from './challenge'
 import { Footer } from './footer'
@@ -36,6 +37,14 @@ export const Quiz = ({
   userSubscription,
 }: Props) => {
   const { open: openHeartsModal } = useHeartsModal()
+  const { open: openPracticeModal } = usePracticeModal()
+
+  useMount(() => {
+    if (initialPercentage === 100) {
+      openPracticeModal()
+    }
+  })
+
   const { width, height } = useWindowSize()
   const [finishAudio] = useAudio({ src: '/finish.mp3', autoPlay: true })
   const [correctAudio, _c, correctControls] = useAudio({ src: '/correct.wav' })
